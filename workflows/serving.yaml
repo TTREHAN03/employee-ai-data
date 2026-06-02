@@ -17,15 +17,27 @@ spec:
     artifacts:
       - name: trainedmodel
   template:
-    spec: |
-      imagePullSecrets:
-        - name: credstutorialrepo
-      containers:
-        - name: server
-          image: docker.io/tarun0305/employee-suitability:01
-          command: ["/bin/sh", "-c"]
-          args:
-            - "python /app/src/serve.py"
-          ports:
-            - containerPort: 9001
-              protocol: TCP
+    apiVersion: serving.kserve.io/v1beta1
+    metadata:
+      annotations:
+        autoscaling.knative.dev/metric: cpu
+        autoscaling.knative.dev/target: "100"
+        autoscaling.knative.dev/targetBurstCapacity: "0"
+      labels:
+        ai.sap.com/resourcePlan: starter
+    spec:
+      predictor:
+        imagePullSecrets:
+          - name: credstutorialrepo
+        containers:
+          - name: kserve-container
+            image: docker.io/tarun0305/employee-suitability:01
+            command: ["/bin/sh", "-c"]
+            args:
+              - "python /app/src/serve.py"
+            ports:
+              - containerPort: 9001
+                protocol: TCP
+            env:
+              - name: STORAGE_URI
+                value: "{{inputs.artifacts.trainedmodel}}"
