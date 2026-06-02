@@ -1,0 +1,30 @@
+apiVersion: ai.sap.com/v1alpha1
+kind: ServingTemplate
+metadata:
+  name: employee-serving
+  annotations:
+    scenarios.ai.sap.com/description: "Employee Suitability API"
+    scenarios.ai.sap.com/name: "Employee Suitability"
+    executables.ai.sap.com/description: "Serve employee model"
+    executables.ai.sap.com/name: "serving"
+    artifacts.ai.sap.com/trainedmodel.kind: "model"
+  labels:
+    scenarios.ai.sap.com/id: "employee-suitability"
+    ai.sap.com/version: "1.0"
+spec:
+  inputs:
+    artifacts:
+      - name: trainedmodel
+  template:
+    spec:
+      imagePullSecrets:
+        - name: credstutorialrepo
+      containers:
+        - name: server
+          image: docker.io/tarun0305/employee-suitability:01
+          command: ["/bin/sh", "-c"]
+          args:
+            - "python /app/src/serve.py"
+          ports:
+            - containerPort: 9001
+              protocol: TCP
