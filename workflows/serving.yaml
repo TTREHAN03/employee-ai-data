@@ -19,13 +19,13 @@ spec:
   template:
     apiVersion: serving.kserve.io/v1beta1
     metadata:
-      annotations:
+      labels: |
+        ai.sap.com/resourcePlan: starter
+      annotations: |
         autoscaling.knative.dev/metric: cpu
         autoscaling.knative.dev/target: "100"
         autoscaling.knative.dev/targetBurstCapacity: "0"
-      labels:
-        ai.sap.com/resourcePlan: starter
-    spec:
+    spec: |
       predictor:
         imagePullSecrets:
           - name: credstutorialrepo
