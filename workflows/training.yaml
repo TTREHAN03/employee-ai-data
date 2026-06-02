@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: employee-training
+  annotations:
+    scenarios.ai.sap.com/description: "Employee Suitability AI"
+    scenarios.ai.sap.com/name: "Employee Suitability"
+    executables.ai.sap.com/description: "Train employee model"
+    executables.ai.sap.com/name: "training"
+  labels:
+    scenarios.ai.sap.com/id: "employee-suitability"
+    ai.sap.com/version: "1.0"
+spec:
+  imagePullSecrets:
+    - name: credstutorialrepo
+  entrypoint: mypipeline
+  arguments:
+    parameters:
+      - name: N_ESTIMATORS
+  templates:
+  - name: mypipeline
+    steps:
+    - - name: training-step
+        template: training-code
+  - name: training-code
+    outputs:
+      artifacts:
+        - name: trainedmodel
+          path: /app/model/
+    container:
+      image: docker.io/tarun0305/employee-suitability:01
+      command: ["/bin/sh", "-c"]
+      env:
+        - name: N_ESTIMATORS
+          value: "{{workflow.parameters.N_ESTIMATORS}}"
+      args:
+        - "python /app/src/main.py"
