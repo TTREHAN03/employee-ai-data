@@ -11,6 +11,7 @@ metadata:
   labels:
     scenarios.ai.sap.com/id: "employee-suitability"
     ai.sap.com/version: "1.0"
+    ai.sap.com/resourcePlan: starter
 spec:
   inputs:
     artifacts:
